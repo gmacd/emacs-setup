@@ -1,14 +1,22 @@
+; Useful: https://github.com/EnigmaCurry/emacs/blob/master/init.el
+
+; Paths
+(add-to-list 'load-path "~/.emacs.d/vendor")
+
+; Windows features (e.g. good shortcuts
+(cua-mode t)
+(setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+(transient-mark-mode 1) ;; No region when it is not highlighted
+(setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
+
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
 
-; Marmalade repo (from nrepl install docs)
+; marmalade repo (from nrepL install docs)
 (require 'package)
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
-
-; Path
-(add-to-list 'exec-path "/usr/local/smlnj-110.75/bin")
 
 ; Nrepl install suggestions
 (add-hook 'nrepl-interaction-mode-hook
