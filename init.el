@@ -81,3 +81,12 @@ by using nxml's indentation rules."
         (backward-char) (insert "\n"))
       (indent-region begin end))
     (message "Ah, much better!"))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Org
+; TODO Windows/mac home dir config
+
+(setq org-directory "C:/Users/grahamm/Dropbox/emacs/org/")
+(setq org-default-notes-file (concat org-directory "/notes.org"))
+(define-key global-map "\C-cc" 'org-capture)
