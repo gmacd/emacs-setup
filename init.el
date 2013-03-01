@@ -25,15 +25,17 @@
 (add-to-list 'same-window-buffer-names "*nrepl*")
 (add-hook 'nrepl-mode-hook 'paredit-mode)
 
-(require 'rainbow-delimiters)
-(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-
 ; Paredit in clojure-mode
 (defun turn-on-paredit () (paredit-mode 1))
 (add-hook 'clojure-mode-hook 'turn-on-paredit)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Audio/Visual
+
 ; Turn off toolbar
 (tool-bar-mode -1)
+(menu-bar-mode -1)
 
 ; Smooth scrolling
 (setq redisplay-dont-pause t
@@ -41,3 +43,17 @@
   scroll-step 1
   scroll-conservatively 10000
   scroll-preserve-screen-position 1)
+
+; Rainbow parens
+(require 'rainbow-delimiters)
+(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+
+; Line numbers
+(global-linum-mode 1)
+
+; No bell
+(setq visible-bell nil)
+(setq ring-bell-function `(lambda ()))
+
+; Slightly smaller font
+(set-face-attribute 'default (selected-frame) :height 90)
