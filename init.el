@@ -1,13 +1,18 @@
 ; Useful: https://github.com/EnigmaCurry/emacs/blob/master/init.el
 
+(setq *is-mac* (eq system-type 'darwin))
+(setq *is-windows* (eq system-type 'windows-nt))
+
+
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
-; Windows features (e.g. good shortcuts
-(cua-mode t)
-(setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
-(transient-mark-mode 1) ;; No region when it is not highlighted
-(setq cua-keep-region-after-copy t) ;; Standard Windows behaviour
+; Windows features (e.g. good keyboard shortcuts (copy, paste, etc))
+(when *is-windows*
+  (cua-mode t)
+  (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
+  (transient-mark-mode 1) ;; No region when it is not highlighted
+  (setq cua-keep-region-after-copy t)) ;; Standard Windows behaviour
 
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
@@ -48,8 +53,9 @@
 (require 'rainbow-delimiters)
 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
 
-; Line numbers
+; Line & column numbers
 (global-linum-mode 1)
+(setq column-number-mode t)
 
 ; No bell
 (setq visible-bell nil)
@@ -60,6 +66,9 @@
 
 ; No word wrap
 (setq-default truncate-lines 1)
+
+; Better trackpad dragging
+(setq mouse-wheel-progressive-speed nil)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -85,8 +94,27 @@ by using nxml's indentation rules."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
-; TODO Windows/mac home dir config
 
-(setq org-directory "C:/Users/grahamm/Dropbox/emacs/org/")
+(when *is-mac*
+  (setq org-directory "/Users/graham/Dropbox/emacs/org/"))
+(when *is-windows*
+  (setq org-directory "C:/Users/grahamm/Dropbox/emacs/org/"))
+
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 (define-key global-map "\C-cc" 'org-capture)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Mail
+
+(setq gnus-select-method '(nnimap "gmail"
+				  (nnimap-address "imap.gmail.com")
+				  (nnimap-server-port 993)
+				  (nnimap-stream ssl)))
+
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "grahamamacdonald@gmail.com" nil))
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587)
