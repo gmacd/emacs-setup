@@ -4,8 +4,17 @@
 (setq *is-windows* (eq system-type 'windows-nt))
 
 
+; marmalade repo (from nrepL install docs)
+(require 'package)
+(add-to-list 'package-archives
+	     '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
+
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 ; Windows features (e.g. good keyboard shortcuts (copy, paste, etc))
 (when *is-windows*
@@ -17,12 +26,6 @@
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
 
-; marmalade repo (from nrepL install docs)
-(require 'package)
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
-
 ; Nrepl install suggestions
 (add-hook 'nrepl-interaction-mode-hook
 	  'nrepl-turn-on-eldoc-mode)
@@ -33,6 +36,21 @@
 ; Paredit in clojure-mode
 (defun turn-on-paredit () (paredit-mode 1))
 (add-hook 'clojure-mode-hook 'turn-on-paredit)
+
+(add-hook 'find-file-hook 'flymake-find-file-hook)
+
+; Ido
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+(add-to-list 'ido-ignore-files "\\.DS_Store")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Javascript
+(add-to-list 'load-path "~/.emacs.d/vendor/jshint-mode")
+(require 'flymake-jshint)
+(add-hook 'javascript-mode-hook
+	  (lambda () (flymake-mode t)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -91,6 +109,14 @@ by using nxml's indentation rules."
       (indent-region begin end))
     (message "Ah, much better!"))
 
+(defun finder ()
+  "Opens file directory in Finder."
+  (interactive)
+  (let ((file (buffer-file-name)))
+    (if file
+        (shell-command
+         (format "%s %s" (executable-find "open") (file-name-directory file)))
+      (error "Buffer is not attached to any file."))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
