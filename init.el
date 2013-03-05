@@ -47,10 +47,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Javascript
-(add-to-list 'load-path "~/.emacs.d/vendor/jshint-mode")
-(require 'flymake-jshint)
-(add-hook 'javascript-mode-hook
-	  (lambda () (flymake-mode t)))
+; (Mac only for now)
+(when *is-mac*
+  (add-to-list 'load-path "~/.emacs.d/vendor/jshint-mode")
+  (require 'flymake-jshint)
+  (add-hook 'javascript-mode-hook
+	    (lambda () (flymake-mode t))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -128,19 +130,3 @@ by using nxml's indentation rules."
 
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 (define-key global-map "\C-cc" 'org-capture)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Mail
-
-(setq gnus-select-method '(nnimap "gmail"
-				  (nnimap-address "imap.gmail.com")
-				  (nnimap-server-port 993)
-				  (nnimap-stream ssl)))
-
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-      smtpmail-auth-credentials '(("smtp.gmail.com" 587 "grahamamacdonald@gmail.com" nil))
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587)
