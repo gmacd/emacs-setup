@@ -4,7 +4,10 @@
 (setq *is-windows* (eq system-type 'windows-nt))
 
 
-; marmalade repo (from nrepL install docs)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; General
+
+; marmalade repo
 (require 'package)
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
@@ -13,8 +16,41 @@
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
-(when (memq window-system '(mac ns))
+(setq inhibit-startup-message t)
+(setq inhibit-scratch-message t)
+
+(add-hook 'find-file-hook 'flymake-find-file-hook)
+
+; Ido
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+
+; Spaces rather than tabs
+(setq-default indent-tabs-mode nil)
+
+; Show matching paren
+(show-paren-mode 1)
+
+; Save backups to ~/.saves
+(setq backup-directory-alist `(("." . "~/.saves")))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Mac
+
+; Allow hash to be entered  
+(when *is-mac*
+  (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#"))))
+
+(when *is-mac*
   (exec-path-from-shell-initialize))
+
+(add-to-list 'ido-ignore-files "\\.DS_Store")
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Windows
 
 ; Windows features (e.g. good keyboard shortcuts (copy, paste, etc))
 (when *is-windows*
@@ -23,27 +59,29 @@
   (transient-mark-mode 1) ;; No region when it is not highlighted
   (setq cua-keep-region-after-copy t)) ;; Standard Windows behaviour
 
-(setq inhibit-startup-message t)
-(setq inhibit-scratch-message t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Clojure
+
+; Rainbow parens
+(require 'rainbow-delimiters)
+(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'nrepl-mode-hook 'rainbow-delimiters-mode)
 
 ; Nrepl install suggestions
-(add-hook 'nrepl-interaction-mode-hook
-	  'nrepl-turn-on-eldoc-mode)
+(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
 (setq nrepl-popup-stacktraces nil)
-(add-to-list 'same-window-buffer-names "*nrepl*")
-(add-hook 'nrepl-mode-hook 'paredit-mode)
+(setq nrepl-hide-special-buffers t)
+;(add-to-list 'same-window-buffer-names "*nrepl*")
+(add-hook 'clojure-mode-hook 'nrepl-interaction-mode)
 
 ; Paredit in clojure-mode
-(defun turn-on-paredit () (paredit-mode 1))
-(add-hook 'clojure-mode-hook 'turn-on-paredit)
+(add-hook 'clojure-mode-hook 'paredit-mode)
+(add-hook 'clojure-mode-hook 'clojure-test-mode)
+(add-hook 'nrepl-mode-hook 'paredit-mode)
 
-(add-hook 'find-file-hook 'flymake-find-file-hook)
-
-; Ido
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
-(add-to-list 'ido-ignore-files "\\.DS_Store")
+; ClojureScript
+(add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Javascript
@@ -56,7 +94,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Audio/Visual
+; General Audio/Visual
 
 ; Turn off toolbar
 (tool-bar-mode -1)
@@ -68,10 +106,6 @@
   scroll-step 1
   scroll-conservatively 10000
   scroll-preserve-screen-position 1)
-
-; Rainbow parens
-(require 'rainbow-delimiters)
-(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
 
 ; Line & column numbers
 (global-linum-mode 1)
@@ -120,6 +154,7 @@ by using nxml's indentation rules."
          (format "%s %s" (executable-find "open") (file-name-directory file)))
       (error "Buffer is not attached to any file."))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
 
@@ -130,3 +165,5 @@ by using nxml's indentation rules."
 
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 (define-key global-map "\C-cc" 'org-capture)
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
