@@ -167,3 +167,11 @@ by using nxml's indentation rules."
 (define-key global-map "\C-cc" 'org-capture)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
+
+; TODO - Only on work PC
+(defun gtd()
+   (interactive)
+   (find-file (concat org-directory "workgtd.org")))
+(defun bugs()
+   (interactive)
+   (find-file (concat org-directory "bugs.org")))
