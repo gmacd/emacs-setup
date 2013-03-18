@@ -16,10 +16,11 @@
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
+;(load-theme 'solarized-[light|dark] t)
+(load-theme 'solarized-light t)
+
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
-
-(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ; Ido
 (setq ido-enable-flex-matching t)
@@ -29,12 +30,40 @@
 ; Spaces rather than tabs
 (setq-default indent-tabs-mode nil)
 
+; Auto indent on return
+(define-key global-map (kbd "RET") 'newline-and-indent)
+
+; Auto indent on paste
+(dolist (command '(yank yank-pop))
+  (eval `(defadvice ,command (after indent-region activate)
+           (and (not current-prefix-arg)
+                (member major-mode '(emacs-lisp-mode lisp-mode
+                                                     js-mode         javascript-mode
+                                                     clojure-mode    scheme-mode
+                                                     haskell-mode    ruby-mode
+                                                     rspec-mode      python-mode
+                                                     c-mode          c++-mode
+                                                     objc-mode       latex-mode
+                                                     plain-tex-mode))
+                (let ((mark-even-if-inactive transient-mark-mode))
+                  (indent-region (region-beginning) (region-end) nil))))))
+
+; Auto complete
+(require 'auto-complete)
+;(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(require 'auto-complete-config)
+(ac-config-default)
+
 ; Show matching paren
 (show-paren-mode 1)
 
 ; Save backups to ~/.saves
 (setq backup-directory-alist `(("." . "~/.saves")))
 
+; Flycheck
+(add-hook 'prog-mode-hook 'flycheck-mode)
+(add-hook 'text-mode-hook 'flycheck-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Mac
@@ -86,11 +115,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Javascript
 ; (Mac only for now)
-(when *is-mac*
-  (add-to-list 'load-path "~/.emacs.d/vendor/jshint-mode")
-  (require 'flymake-jshint)
-  (add-hook 'javascript-mode-hook
-	    (lambda () (flymake-mode t))))
+;(when *is-mac*
+;  (add-to-list 'load-path "~/.emacs.d/vendor/jshint-mode")
+;  (require 'flymake-jshint)
+;  (add-hook 'javascript-mode-hook
+;	    (lambda () (flymake-mode t))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -167,3 +196,15 @@ by using nxml's indentation rules."
 (define-key global-map "\C-cc" 'org-capture)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(js-indent-level 4))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
