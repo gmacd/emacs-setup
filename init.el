@@ -196,6 +196,7 @@ by using nxml's indentation rules."
 (define-key global-map "\C-cc" 'org-capture)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -208,3 +209,12 @@ by using nxml's indentation rules."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+; TODO - Only on work PC
+(defun gtd()
+   (interactive)
+   (find-file (concat org-directory "workgtd.org")))
+(defun bugs()
+   (interactive)
+   (find-file (concat org-directory "bugs.org")))
+
