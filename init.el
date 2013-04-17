@@ -7,6 +7,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
 
+; TODO Check we're at work!
+(when *is-windows*
+  (setq url-proxy-services '(("http" . "proxy.trayport.com:80"))))
+
+; http://stackoverflow.com/questions/145175/how-to-invoke-an-interactive-elisp-interpreter-in-emacs
+; ???
+; (setq debug-on-error t)
+
 ; marmalade repo
 (require 'package)
 (add-to-list 'package-archives
@@ -21,6 +29,15 @@
 
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
+
+; Save session on exit
+(desktop-save-mode 1)
+
+; Recent files mode
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 ; Ido
 (setq ido-enable-flex-matching t)
