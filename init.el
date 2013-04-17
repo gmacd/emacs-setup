@@ -34,26 +34,32 @@
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
 ; Auto indent on paste
-(dolist (command '(yank yank-pop))
-  (eval `(defadvice ,command (after indent-region activate)
-           (and (not current-prefix-arg)
-                (member major-mode '(emacs-lisp-mode lisp-mode
-                                                     js-mode         javascript-mode
-                                                     clojure-mode    scheme-mode
-                                                     haskell-mode    ruby-mode
-                                                     rspec-mode      python-mode
-                                                     c-mode          c++-mode
-                                                     objc-mode       latex-mode
-                                                     plain-tex-mode))
-                (let ((mark-even-if-inactive transient-mark-mode))
-                  (indent-region (region-beginning) (region-end) nil))))))
+;(dolist (command '(yank yank-pop))
+;  (eval `(defadvice ,command (after indent-region activate)
+;           (and (not current-prefix-arg)
+;                (member major-mode '(emacs-lisp-mode lisp-mode
+;                                                     js-mode         javascript-mode
+;                                                     clojure-mode    scheme-mode
+;                                                     haskell-mode    ruby-mode
+;                                                     rspec-mode      python-mode
+;                                                     c-mode          c++-mode
+;                                                     objc-mode       latex-mode
+;                                                     plain-tex-mode))
+;                (let ((mark-even-if-inactive transient-mark-mode))
+;                  (indent-region (region-beginning) (region-end) nil))))))
 
 ; Auto complete
-(require 'auto-complete)
+;(require 'auto-complete)
 ;(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(require 'auto-complete-config)
-(ac-config-default)
+;(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+;(require 'auto-complete-config)
+;(ac-config-default)
+
+; ac-nrepl
+;(require 'ac-nrepl)
+;(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+;(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+;(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
 
 ; Show matching paren
 (show-paren-mode 1)
@@ -62,8 +68,8 @@
 (setq backup-directory-alist `(("." . "~/.saves")))
 
 ; Flycheck
-(add-hook 'prog-mode-hook 'flycheck-mode)
-(add-hook 'text-mode-hook 'flycheck-mode)
+;(add-hook 'prog-mode-hook 'flycheck-mode)
+;(add-hook 'text-mode-hook 'flycheck-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Mac
@@ -98,16 +104,16 @@
 (add-hook 'nrepl-mode-hook 'rainbow-delimiters-mode)
 
 ; Nrepl install suggestions
-(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
-(setq nrepl-popup-stacktraces nil)
-(setq nrepl-hide-special-buffers t)
+;(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+;(setq nrepl-popup-stacktraces nil)
+;(setq nrepl-hide-special-buffers t)
 ;(add-to-list 'same-window-buffer-names "*nrepl*")
-(add-hook 'clojure-mode-hook 'nrepl-interaction-mode)
+;(add-hook 'clojure-mode-hook 'nrepl-interaction-mode)
 
 ; Paredit in clojure-mode
-(add-hook 'clojure-mode-hook 'paredit-mode)
-(add-hook 'clojure-mode-hook 'clojure-test-mode)
-(add-hook 'nrepl-mode-hook 'paredit-mode)
+;(add-hook 'clojure-mode-hook 'paredit-mode)
+;(add-hook 'clojure-mode-hook 'clojure-test-mode)
+;(add-hook 'nrepl-mode-hook 'paredit-mode)
 
 ; ClojureScript
 (add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
@@ -145,7 +151,7 @@
 (setq ring-bell-function `(lambda ()))
 
 ; Slightly smaller font
-(set-face-attribute 'default (selected-frame) :height 90)
+;(set-face-attribute 'default (selected-frame) :height 90)
 
 ; No word wrap
 (setq-default truncate-lines 1)
@@ -183,6 +189,21 @@ by using nxml's indentation rules."
          (format "%s %s" (executable-find "open") (file-name-directory file)))
       (error "Buffer is not attached to any file."))))
 
+;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+(defun rename-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not filename)
+        (message "Buffer '%s' is not visiting a file!" name)
+      (if (get-buffer new-name)
+          (message "A buffer named '%s' already exists!" new-name)
+        (progn
+          (rename-file name new-name 1)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
