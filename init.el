@@ -7,10 +7,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
 
-; TODO Check we're at work!
-(when *is-windows*
-  (setq url-proxy-services '(("http" . "proxy.trayport.com:80"))))
-
 ; http://stackoverflow.com/questions/145175/how-to-invoke-an-interactive-elisp-interpreter-in-emacs
 ; ???
 ; (setq debug-on-error t)
