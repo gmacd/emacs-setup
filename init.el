@@ -7,6 +7,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
 
+(setq default-tab-width 4)
+
 ; TODO Check we're at work!
 (when *is-windows*
   (setq url-proxy-services '(("http" . "proxy.trayport.com:80"))))
@@ -15,11 +17,10 @@
 ; ???
 ; (setq debug-on-error t)
 
-; marmalade repo
-(require 'package)
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (package-initialize)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
 
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
@@ -29,6 +30,9 @@
 
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
+
+; Auto refresh files
+(global-auto-revert-mode t)
 
 ; Save session on exit
 (desktop-save-mode 1)
@@ -50,43 +54,27 @@
 ; Auto indent on return
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
-; Auto indent on paste
-;(dolist (command '(yank yank-pop))
-;  (eval `(defadvice ,command (after indent-region activate)
-;           (and (not current-prefix-arg)
-;                (member major-mode '(emacs-lisp-mode lisp-mode
-;                                                     js-mode         javascript-mode
-;                                                     clojure-mode    scheme-mode
-;                                                     haskell-mode    ruby-mode
-;                                                     rspec-mode      python-mode
-;                                                     c-mode          c++-mode
-;                                                     objc-mode       latex-mode
-;                                                     plain-tex-mode))
-;                (let ((mark-even-if-inactive transient-mark-mode))
-;                  (indent-region (region-beginning) (region-end) nil))))))
-
 ; Auto complete
-;(require 'auto-complete)
-;(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
-;(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-;(require 'auto-complete-config)
-;(ac-config-default)
+(require 'auto-complete)
+(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(require 'auto-complete-config)
+(ac-config-default)
 
 ; ac-nrepl
-;(require 'ac-nrepl)
-;(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+(require 'ac-nrepl)
+(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
 ;(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
-;(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+
+(load-file "/Users/graham/Documents/Code/github/nrepl-inspect/nrepl-inspect.el")
+(define-key nrepl-mode-map (kbd "C-c C-i") 'nrepl-inspect)
 
 ; Show matching paren
 (show-paren-mode 1)
 
 ; Save backups to ~/.saves
 (setq backup-directory-alist `(("." . "~/.saves")))
-
-; Flycheck
-;(add-hook 'prog-mode-hook 'flycheck-mode)
-;(add-hook 'text-mode-hook 'flycheck-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Mac
@@ -121,11 +109,26 @@
 (add-hook 'nrepl-mode-hook 'rainbow-delimiters-mode)
 
 ; Nrepl install suggestions
-;(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
-;(setq nrepl-popup-stacktraces nil)
-;(setq nrepl-hide-special-buffers t)
-;(add-to-list 'same-window-buffer-names "*nrepl*")
-;(add-hook 'clojure-mode-hook 'nrepl-interaction-mode)
+(setq nrepl-popup-stacktraces nil)
+(setq nrepl-hide-special-buffers t)
+(setq nrepl-popup-stacktraces-in-repl t)
+(setq nrepl-history-file "~/.emacs.d/nrepl-history")
+
+;; Repl mode hook
+(add-hook 'nrepl-mode-hook 'subword-mode)
+
+;; Some default eldoc facilities
+(add-hook 'nrepl-connected-hook
+          (defun pnh-clojure-mode-eldoc-hook ()
+            (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+            (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+            (nrepl-enable-on-existing-clojure-buffers)))
+
+; https://github.com/clojure-emacs/nrepl.el/issues/316
+; Honour :repl-options {:init-ns 'my-ns} when starting nREPL in emacs
+(add-hook 'nrepl-connected-hook 
+  (lambda () (nrepl-set-ns (plist-get
+                 (nrepl-send-string-sync "(symbol (str *ns*))") :value))))
 
 ; Paredit in clojure-mode
 ;(add-hook 'clojure-mode-hook 'paredit-mode)
@@ -134,6 +137,9 @@
 
 ; ClojureScript
 (add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
+
+; Smartparens
+(smartparens-global-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Javascript
@@ -147,6 +153,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General Audio/Visual
+
+(windmove-default-keybindings 'meta)
 
 ; Turn off toolbar
 (tool-bar-mode -1)
@@ -175,6 +183,10 @@
 
 ; Better trackpad dragging
 (setq mouse-wheel-progressive-speed nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Go
+(add-hook 'before-save-hook 'gofmt-before-save) 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -225,11 +237,14 @@ by using nxml's indentation rules."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
 
+(require 'org-journal)
+
 (when *is-mac*
   (setq org-directory "/Users/graham/Dropbox/emacs/org/"))
 (when *is-windows*
   (setq org-directory "C:/Users/grahamm/Dropbox/emacs/org/"))
 
+(setq org-journal-dir (concat org-directory "journal/"))
 (setq org-default-notes-file (concat org-directory "/notes.org"))
 (define-key global-map "\C-cc" 'org-capture)
 (global-set-key "\C-cl" 'org-store-link)
@@ -255,31 +270,4 @@ by using nxml's indentation rules."
 (defun bugs()
    (interactive)
    (find-file (concat org-directory "bugs.org")))
-
-
-; http://metajack.im/2009/01/01/journaling-with-emacs-orgmode/
-(defvar org-journal-file (concat org-directory "journal.org")
-  "Path to OrgMode journal file.")
-(defvar org-journal-date-format "%Y-%m-%d"
-  "Date format string for journal headings.")
-
-(defun org-journal-entry ()
-  "Create a new diary entry for today or append to an existing one."
-  (interactive)
-  (switch-to-buffer (find-file org-journal-file))
-  (widen)
-  (let ((isearch-forward t) (today (format-time-string org-journal-date-format)))
-    (beginning-of-buffer)
-    (unless (org-goto-local-search-headings today nil t)
-      ((lambda () 
-         (org-insert-heading)
-         (insert today)
-         (insert "\n\n  \n"))))
-    (beginning-of-buffer)
-    (org-show-entry)
-    (org-narrow-to-subtree)
-    (end-of-buffer)
-    (backward-char 2)
-    (unless (= (current-column) 2)
-      (insert "\n\n  "))))
-(global-set-key "\C-cj" 'org-journal-entry)
+(put 'dired-find-alternate-file 'disabled nil)
