@@ -62,13 +62,13 @@
 (ac-config-default)
 
 ; ac-nrepl
-(require 'ac-nrepl)
-(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+;(require 'ac-nrepl)
+;(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
 ;(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
-(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+;(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
 
-(load-file "/Users/graham/Documents/Code/github/nrepl-inspect/nrepl-inspect.el")
-(define-key nrepl-mode-map (kbd "C-c C-i") 'nrepl-inspect)
+;(load-file "/Users/graham/Documents/Code/github/nrepl-inspect/nrepl-inspect.el")
+;(define-key nrepl-mode-map (kbd "C-c C-i") 'nrepl-inspect)
 
 ; Show matching paren
 (show-paren-mode 1)
@@ -109,9 +109,9 @@
 (add-hook 'nrepl-mode-hook 'rainbow-delimiters-mode)
 
 ; Nrepl install suggestions
-(setq nrepl-popup-stacktraces nil)
-(setq nrepl-hide-special-buffers t)
-(setq nrepl-popup-stacktraces-in-repl t)
+;(setq nrepl-popup-stacktraces nil)
+;(setq nrepl-hide-special-buffers t)
+;(setq nrepl-popup-stacktraces-in-repl t)
 (setq nrepl-history-file "~/.emacs.d/nrepl-history")
 
 ;; Repl mode hook
@@ -187,7 +187,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Go
 (add-hook 'before-save-hook 'gofmt-before-save) 
-
+(require 'go-autocomplete)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Misc funcs
@@ -237,18 +237,18 @@ by using nxml's indentation rules."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
 
-(require 'org-journal)
+;(require 'org-journal)
 
-(when *is-mac*
-  (setq org-directory "/Users/graham/Dropbox/emacs/org/"))
-(when *is-windows*
-  (setq org-directory "C:/Users/grahamm/Dropbox/emacs/org/"))
+;(when *is-mac*
+;  (setq org-directory "/Users/graham/Dropbox/emacs/org/"))
+;(when *is-windows*
+;  (setq org-directory "C:/Users/grahamm/Dropbox/emacs/org/"))
 
-(setq org-journal-dir (concat org-directory "journal/"))
-(setq org-default-notes-file (concat org-directory "/notes.org"))
-(define-key global-map "\C-cc" 'org-capture)
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
+;(setq org-journal-dir (concat org-directory "journal/"))
+;(setq org-default-notes-file (concat org-directory "/notes.org"))
+;(define-key global-map "\C-cc" 'org-capture)
+;(global-set-key "\C-cl" 'org-store-link)
+;(global-set-key "\C-ca" 'org-agenda)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -264,10 +264,11 @@ by using nxml's indentation rules."
  )
 
 ; TODO - Only on work PC
-(defun gtd()
-   (interactive)
-   (find-file (concat org-directory "workgtd.org")))
-(defun bugs()
-   (interactive)
-   (find-file (concat org-directory "bugs.org")))
-(put 'dired-find-alternate-file 'disabled nil)
+;(defun gtd()
+;   (interactive)
+;   (find-file (concat org-directory "workgtd.org")))
+;(defun bugs()
+;   (interactive)
+;   (find-file (concat org-directory "bugs.org")))
+;(put 'dired-find-alternate-file 'disabled nil)
+;(put 'erase-buffer 'disabled nil)
