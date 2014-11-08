@@ -10,8 +10,8 @@
 (setq default-tab-width 4)
 
 ; TODO Check we're at work!
-(when *is-windows*
-  (setq url-proxy-services '(("http" . "proxy.trayport.com:80"))))
+;(when *is-windows*
+;  (setq url-proxy-services '(("http" . "proxy.trayport.com:80"))))
 
 ; http://stackoverflow.com/questions/145175/how-to-invoke-an-interactive-elisp-interpreter-in-emacs
 ; ???
@@ -26,7 +26,8 @@
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
 ;(load-theme 'solarized-[light|dark] t)
-(load-theme 'solarized-light t)
+;(load-theme 'solarized-light t)
+(load-theme 'monokai t)
 
 (setq inhibit-startup-message t)
 (setq inhibit-scratch-message t)
@@ -56,7 +57,7 @@
 
 ; Auto complete
 (require 'auto-complete)
-(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
+;(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 (require 'auto-complete-config)
 (ac-config-default)
@@ -81,10 +82,11 @@
 
 ; Allow hash to be entered  
 (when *is-mac*
-  (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#"))))
+  (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
+  (setq mac-command-modifier 'meta))
 
-(when *is-mac*
-  (exec-path-from-shell-initialize))
+;(when *is-mac*
+;  (exec-path-from-shell-initialize))
 
 (add-to-list 'ido-ignore-files "\\.DS_Store")
 
@@ -139,7 +141,7 @@
 (add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
 
 ; Smartparens
-(smartparens-global-mode t)
+;(smartparens-global-mode t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Javascript
@@ -168,7 +170,7 @@
   scroll-preserve-screen-position 1)
 
 ; Line & column numbers
-(global-linum-mode 1)
+;(global-linum-mode 1)
 (setq column-number-mode t)
 
 ; No bell
@@ -176,7 +178,7 @@
 (setq ring-bell-function `(lambda ()))
 
 ; Slightly smaller font
-;(set-face-attribute 'default (selected-frame) :height 90)
+(set-face-attribute 'default (selected-frame) :height 100)
 
 ; No word wrap
 (setq-default truncate-lines 1)
@@ -186,7 +188,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Go
-(add-hook 'before-save-hook 'gofmt-before-save) 
+(add-hook 'before-save-hook #'gofmt-before-save) 
 (require 'go-autocomplete)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -255,6 +257,9 @@ by using nxml's indentation rules."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("57f8801351e8b7677923c9fe547f7e19f38c99b80d68c34da6fa9b94dc6d3297" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" default)))
  '(js-indent-level 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
