@@ -22,6 +22,9 @@
   (package-initialize)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
 
+(when *is-mac*
+  (exec-path-from-shell-initialize))
+
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
@@ -77,6 +80,9 @@
 ; Save backups to ~/.saves
 (setq backup-directory-alist `(("." . "~/.saves")))
 
+;(add-to-list 'load-path "path-to-julia-mode")
+(require 'julia-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Mac
 
@@ -85,8 +91,8 @@
   (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
   (setq mac-command-modifier 'meta))
 
-;(when *is-mac*
-;  (exec-path-from-shell-initialize))
+(when *is-mac*
+  (exec-path-from-shell-initialize))
 
 (add-to-list 'ido-ignore-files "\\.DS_Store")
 
@@ -101,6 +107,10 @@
   (transient-mark-mode 1) ;; No region when it is not highlighted
   (setq cua-keep-region-after-copy t)) ;; Standard Windows behaviour
 
+(when *is-mac*
+;;  (require 'redo)
+  (require 'mac-key-mode)
+  (mac-key-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Clojure
@@ -129,8 +139,8 @@
 ; https://github.com/clojure-emacs/nrepl.el/issues/316
 ; Honour :repl-options {:init-ns 'my-ns} when starting nREPL in emacs
 (add-hook 'nrepl-connected-hook 
-  (lambda () (nrepl-set-ns (plist-get
-                 (nrepl-send-string-sync "(symbol (str *ns*))") :value))))
+          (lambda () (nrepl-set-ns (plist-get
+                                    (nrepl-send-string-sync "(symbol (str *ns*))") :value))))
 
 ; Paredit in clojure-mode
 ;(add-hook 'clojure-mode-hook 'paredit-mode)
@@ -152,6 +162,16 @@
 ;  (add-hook 'javascript-mode-hook
 ;	    (lambda () (flymake-mode t))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; C/C++
+(add-hook 'c-mode-common-hook
+          (lambda()
+            (local-set-key  (kbd "C-c o") 'ff-find-other-file)
+            (setq c-basic-offset 4)
+            (c-set-offset 'substatement-open 0)))
+
+;; Open .h files in C++ mode
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General Audio/Visual
@@ -188,8 +208,19 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Go
-(add-hook 'before-save-hook #'gofmt-before-save) 
-(require 'go-autocomplete)
+;;(add-hook 'before-save-hook #'gofmt-before-save) 
+;;(require 'go-autocomplete)
+
+(defun my-go-mode-hook ()
+  ; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ; Customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "go build -v && go test -v && go vet"))
+  ; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump))
+(add-hook 'go-mode-hook 'my-go-mode-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Misc funcs
