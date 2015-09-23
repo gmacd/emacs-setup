@@ -2,16 +2,12 @@
 
 (setq *is-mac* (eq system-type 'darwin))
 (setq *is-windows* (eq system-type 'windows-nt))
-
+(setq *is-linux* (eq system-type 'gnu/linux))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; General
 
 (setq default-tab-width 4)
-
-; TODO Check we're at work!
-;(when *is-windows*
-;  (setq url-proxy-services '(("http" . "proxy.trayport.com:80"))))
 
 ; http://stackoverflow.com/questions/145175/how-to-invoke-an-interactive-elisp-interpreter-in-emacs
 ; ???
@@ -77,6 +73,26 @@
 ; Save backups to ~/.saves
 (setq backup-directory-alist `(("." . "~/.saves")))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; C++
+
+(add-hook 'c-mode-common-hook
+          (lambda()
+            (local-set-key (kbd "M-o") 'projectile-find-other-file)
+            (setq c-basic-offset 4)
+            (c-set-offset 'substatement-open 0)))
+
+;; Open .h files in C++ mode
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Linux
+
+;; Disable ctrl-z keybinding
+(when *is-linux*
+  (global-unset-key (kbd "C-z")))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Mac
 
@@ -100,57 +116,6 @@
   (setq cua-auto-tabify-rectangles nil) ;; Don't tabify after rectangle commands
   (transient-mark-mode 1) ;; No region when it is not highlighted
   (setq cua-keep-region-after-copy t)) ;; Standard Windows behaviour
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Clojure
-
-; Rainbow parens
-(require 'rainbow-delimiters)
-(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'nrepl-mode-hook 'rainbow-delimiters-mode)
-
-; Nrepl install suggestions
-;(setq nrepl-popup-stacktraces nil)
-;(setq nrepl-hide-special-buffers t)
-;(setq nrepl-popup-stacktraces-in-repl t)
-(setq nrepl-history-file "~/.emacs.d/nrepl-history")
-
-;; Repl mode hook
-(add-hook 'nrepl-mode-hook 'subword-mode)
-
-;; Some default eldoc facilities
-(add-hook 'nrepl-connected-hook
-          (defun pnh-clojure-mode-eldoc-hook ()
-            (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-            (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
-            (nrepl-enable-on-existing-clojure-buffers)))
-
-; https://github.com/clojure-emacs/nrepl.el/issues/316
-; Honour :repl-options {:init-ns 'my-ns} when starting nREPL in emacs
-(add-hook 'nrepl-connected-hook 
-  (lambda () (nrepl-set-ns (plist-get
-                 (nrepl-send-string-sync "(symbol (str *ns*))") :value))))
-
-; Paredit in clojure-mode
-;(add-hook 'clojure-mode-hook 'paredit-mode)
-;(add-hook 'clojure-mode-hook 'clojure-test-mode)
-;(add-hook 'nrepl-mode-hook 'paredit-mode)
-
-; ClojureScript
-(add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
-
-; Smartparens
-;(smartparens-global-mode t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Javascript
-; (Mac only for now)
-;(when *is-mac*
-;  (add-to-list 'load-path "~/.emacs.d/vendor/jshint-mode")
-;  (require 'flymake-jshint)
-;  (add-hook 'javascript-mode-hook
-;	    (lambda () (flymake-mode t))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,11 +150,6 @@
 
 ; Better trackpad dragging
 (setq mouse-wheel-progressive-speed nil)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Go
-(add-hook 'before-save-hook #'gofmt-before-save) 
-(require 'go-autocomplete)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Misc funcs
@@ -237,6 +197,14 @@ by using nxml's indentation rules."
           (set-buffer-modified-p nil))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; eshell
+
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+(add-to-list 'comint-output-filter-functions 'ansi-color-process-output)
+(add-hook 'eshell-preoutput-filter-functions 'ansi-color-filter-apply)
+(add-hook 'eshell-preoutput-filter-functions 'ansi-color-apply)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Org
 
 ;(require 'org-journal)
@@ -261,19 +229,10 @@ by using nxml's indentation rules."
    (quote
     ("57f8801351e8b7677923c9fe547f7e19f38c99b80d68c34da6fa9b94dc6d3297" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" default)))
  '(js-indent-level 4))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-; TODO - Only on work PC
-;(defun gtd()
-;   (interactive)
-;   (find-file (concat org-directory "workgtd.org")))
-;(defun bugs()
-;   (interactive)
-;   (find-file (concat org-directory "bugs.org")))
-;(put 'dired-find-alternate-file 'disabled nil)
-;(put 'erase-buffer 'disabled nil)
