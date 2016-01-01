@@ -18,6 +18,9 @@
   (package-initialize)
   (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t))
 
+(when *is-mac*
+  (exec-path-from-shell-initialize))
+
 ; Paths
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
@@ -103,28 +106,52 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Elisp
+
+(global-set-key [(control c) (c)] 'compile-again)
+
+;; Recompile command
+;; (From http://emacswiki.org/emacs/CompileCommand)
+(setq compilation-last-buffer nil)
+(defun compile-again (pfx)
+  """Run the same compile as the last time.
+
+If there was no last time, or there is a prefix argument, this acts like
+M-x compile.
+"""
+(interactive "p")
+ (if (and (eq pfx 1)
+	  compilation-last-buffer)
+     (progn
+       (set-buffer compilation-last-buffer)
+       (revert-buffer t t))
+   (call-interactively 'compile)))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Linux
 
 ;; Disable ctrl-z keybinding
 (when *is-linux*
   (global-unset-key (kbd "C-z")))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Mac
+;; Mac
 
 ; Allow hash to be entered  
 (when *is-mac*
   (global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
   (setq mac-command-modifier 'meta))
 
-;(when *is-mac*
-;  (exec-path-from-shell-initialize))
+(when *is-mac*
+  (exec-path-from-shell-initialize))
 
 (add-to-list 'ido-ignore-files "\\.DS_Store")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Windows
+;; Windows
 
 ; Windows features (e.g. good keyboard shortcuts (copy, paste, etc))
 (when *is-windows*
@@ -133,9 +160,25 @@
   (transient-mark-mode 1) ;; No region when it is not highlighted
   (setq cua-keep-region-after-copy t)) ;; Standard Windows behaviour
 
+(when *is-mac*
+;;  (require 'redo)
+  (require 'mac-key-mode)
+  (mac-key-mode 1))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; General Audio/Visual
+;; C/C++
+(add-hook 'c-mode-common-hook
+          (lambda()
+            (local-set-key  (kbd "C-c o") 'ff-find-other-file)
+            (setq c-basic-offset 4)
+            (c-set-offset 'substatement-open 0)))
+
+;; Open .h files in C++ mode
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; General Audio/Visual
 
 (windmove-default-keybindings 'meta)
 
@@ -168,8 +211,8 @@
 (setq mouse-wheel-progressive-speed nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Misc funcs
-; TODO Move to another file
+;; Misc funcs
+;; TODO Move to another file
 
 ; http://blog.bookworm.at/2007/03/pretty-print-xml-with-emacs.html
 (defun pretty-print-xml-region (begin end)
